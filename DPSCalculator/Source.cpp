@@ -133,6 +133,48 @@ wep manualInput(wep weapon) {
 
 wep import(wep weapon) {
 
+	ifstream weapons;
+	weapons.open("Weapons.txt");
+	bool exit = false;
+	string name;
+	string trash;
+
+	cout << "Please input the name of the weapon you wish to import." << endl;
+
+	cin.ignore();
+	getline(cin, name);
+
+	weapons >> trash;
+
+	while (weapons) {
+
+		weapons.ignore();
+		getline(weapons, weapon.name);
+
+		if (weapon.name == name) {
+			weapons >> weapon.maxDamage;
+			weapons >> weapon.minDamage;
+			weapons >> weapon.minRange;
+			weapons >> weapon.maxRange;
+			weapons >> weapon.magSize;
+			weapons >> weapon.RPM;
+			weapons >> weapon.headShotMult;
+			weapons >> weapon.damageType;
+
+			break;
+		}else{
+		
+			weapons.ignore(INT_MAX, 'S');
+		}
+
+		
+	}
+
+	weapons.close();
+
+	cout << weapon.name << endl;
+	cout << weapon.maxDamage << endl;
+
 	return weapon;
 }
 
@@ -141,6 +183,7 @@ void save(wep weapon) {
 	ofstream weapons;
 	weapons.open("Weapons.txt");
 
+	weapons << 'S' << endl;
 	weapons << weapon.name << endl;
 	weapons << weapon.maxDamage << endl;
 	weapons << weapon.minDamage << endl;
@@ -151,6 +194,8 @@ void save(wep weapon) {
 	weapons << weapon.headShotMult << endl;
 	weapons << weapon.damageType << endl;
 	weapons << "<END>" << endl;
+
+	weapons.close();
 
 	return;
 }
