@@ -20,8 +20,17 @@ struct wep {
 	string damageType;
 };
 
+struct vehicle {
+
+	int frontResist;
+	int sideResist;
+	int backResist;
+	string name;
+};
+
 void DPSCalc();
 wep manualInput(wep);
+wep manualInput();
 wep import(wep);
 void save(wep);
 
@@ -43,7 +52,7 @@ int main() {
 			DPSCalc();
 		}
 		else if (input == 2) {
-			cout << "This has not been implemented yet. Sorry." << endl;
+			manualInput();
 		}
 		else if (input == 3) {
 			cout << "Exiting..." << endl;
@@ -76,8 +85,15 @@ void DPSCalc() {
 			weapon = import(weapon);
 		}
 		else { cout << "That input was somehow invalid. Please try again." << endl; }
-	}
-}
+	}//end of while loop
+
+	short dps;//damage per second
+	short RPS;//rounds per second
+
+	RPS = weapon.RPM / 60;
+
+
+}//end of function DPSCalc
 
 wep manualInput(wep weapon) {
 
@@ -131,6 +147,54 @@ wep manualInput(wep weapon) {
 	return weapon;
 }
 
+wep manualInput() {
+
+	int input;
+	wep weapon;
+
+	cout << "Beginning input..." << endl << endl;
+
+	cout << "Max damage: ";
+	cin >> weapon.maxDamage;
+	cout << endl;
+
+	cout << "Minimum dropoff range: ";
+	cin >> weapon.minRange;
+	cout << endl;
+
+	cout << "Minimum damage: ";
+	cin >> weapon.minDamage;
+	cout << endl;
+
+	cout << "Maximum dropoff range: ";
+	cin >> weapon.maxRange;
+	cout << endl;
+
+	cout << "Magazine size: ";
+	cin >> weapon.magSize;
+	cout << endl;
+
+	cout << "Rounds Per Minute: ";
+	cin >> weapon.RPM;
+	cout << endl;
+
+	cout << "Headshot multiplier(default is 2.0): ";
+	cin >> weapon.headShotMult;
+	cout << endl;
+
+	cout << "Damage type(\"infantry\" for infantry weapons): ";
+	cin >> weapon.damageType;
+	cout << endl;
+
+	cout << "Name of weapon: ";
+	cin >> weapon.name;
+	cout << endl;
+
+	save(weapon);
+	
+	return weapon;
+}
+
 wep import(wep weapon) {
 
 	ifstream weapons;
@@ -181,7 +245,7 @@ wep import(wep weapon) {
 void save(wep weapon) {
 
 	ofstream weapons;
-	weapons.open("Weapons.txt");
+	weapons.open("Weapons.txt", ofstream::app);
 
 	weapons << 'S' << endl;
 	weapons << weapon.name << endl;

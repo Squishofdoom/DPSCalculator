@@ -159,6 +159,7 @@
     <ResourceCompile Include="DPSCalculator.rc" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="DamageResists.txt" />
     <Text Include="Weapons.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
