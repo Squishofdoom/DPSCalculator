@@ -33,6 +33,7 @@ wep manualInput(wep);
 wep manualInput();
 wep import(wep);
 void save(wep);
+string convertLower(string);
 
 int main() {
 
@@ -88,9 +89,21 @@ void DPSCalc() {
 	}//end of while loop
 
 	short dps;//damage per second
-	short RPS;//rounds per second
+	short rps;//rounds per second
+	short headDPS;
+	short legDPS;
+	short damage;
+	short distance = 30;
 
-	RPS = weapon.RPM / 60;
+	damage = (weapon.maxDamage - ((distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage)));
+
+	cout << damage << " damage at this range." << endl;
+
+	rps = weapon.RPM / 60;
+
+	dps = rps * weapon.maxDamage;
+	headDPS = dps * 2;
+	legDPS = dps * .90;
 
 
 }//end of function DPSCalc
@@ -136,11 +149,15 @@ wep manualInput(wep weapon) {
 	cout << "Would you like to save this weapon into file? 1 for yes, 2 for no." << endl;
 	cin >> input;
 
+	weapon.damageType = convertLower(weapon.damageType);
+
 	if (input == 1) {
 
 		cout << "Name of weapon: ";
 		cin >> weapon.name;
 		cout << endl;
+
+		weapon.name = convertLower(weapon.name);
 
 		save(weapon);
 	}
@@ -151,6 +168,7 @@ wep manualInput() {
 
 	int input;
 	wep weapon;
+	int count = 0;
 
 	cout << "Beginning input..." << endl << endl;
 
@@ -189,6 +207,9 @@ wep manualInput() {
 	cout << "Name of weapon: ";
 	cin >> weapon.name;
 	cout << endl;
+
+	weapon.damageType = convertLower(weapon.damageType);
+	weapon.name = convertLower(weapon.name);
 
 	save(weapon);
 	
@@ -262,4 +283,17 @@ void save(wep weapon) {
 	weapons.close();
 
 	return;
+}
+
+string convertLower(string upper) {
+
+	int size;
+
+	size = upper.size();
+	
+	for (int x = 0; x < size; x++) {
+		upper[x] = tolower(upper[x]);
+	}
+
+	return upper;
 }

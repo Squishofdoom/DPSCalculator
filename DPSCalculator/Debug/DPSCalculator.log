@@ -1,2 +1,5 @@
-﻿  DPSCalculator.vcxproj -> C:\Users\jared.berger\Desktop\DPSCalculator\DPSCalculator\Debug\DPSCalculator.exe
+﻿  Source.cpp
+c:\users\jared.berger\desktop\dpscalculator\dpscalculator\dpscalculator\source.cpp(106): warning C4244: '=': conversion from 'double' to 'short', possible loss of data
+c:\users\jared.berger\desktop\dpscalculator\dpscalculator\dpscalculator\source.cpp(169): warning C4101: 'input': unreferenced local variable
+  DPSCalculator.vcxproj -> C:\Users\jared.berger\Desktop\DPSCalculator\DPSCalculator\Debug\DPSCalculator.exe
   DPSCalculator.vcxproj -> C:\Users\jared.berger\Desktop\DPSCalculator\DPSCalculator\Debug\DPSCalculator.pdb (Full PDB)
