@@ -1,6 +1,6 @@
 ﻿  Source.cpp
-c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(91): warning C4101: 'dps': unreferenced local variable
-c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(92): warning C4101: 'idealDPS': unreferenced local variable
-c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(168): warning C4101: 'input': unreferenced local variable
+c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(125): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(93): warning C4101: 'dps': unreferenced local variable
+c:\users\spami_000\documents\github\dpscalculator\dpscalculator\source.cpp(209): warning C4101: 'input': unreferenced local variable
   DPSCalculator.vcxproj -> C:\Users\spami_000\Documents\GitHub\DPSCalculator\Debug\DPSCalculator.exe
   DPSCalculator.vcxproj -> C:\Users\spami_000\Documents\GitHub\DPSCalculator\Debug\DPSCalculator.pdb (Full PDB)
