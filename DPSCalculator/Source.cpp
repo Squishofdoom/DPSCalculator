@@ -88,22 +88,21 @@ void DPSCalc() {
 		else { cout << "That input was somehow invalid. Please try again." << endl; }
 	}//end of while loop
 
-	short dps;//damage per second
-	short rps;//rounds per second
-	short headDPS;
-	short legDPS;
-	short damage;
-	short distance = 30;
+	double dps;//damage per second
+	double idealDPS;
+	double rps;//rounds per second
+	double damage;
+	double distance;
 
-	damage = (weapon.maxDamage - ((distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage)));
+	cout << "What distance are you shooting from?" << endl;
 
-	cout << damage << " damage at this range." << endl;
+	cin >> distance;
 
+	damage = weapon.maxDamage - (distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage);
 	rps = weapon.RPM / 60;
 
-	dps = rps * weapon.maxDamage;
-	headDPS = dps * 2;
-	legDPS = dps * .90;
+
+	cout << damage << " damage at " << distance << " meters." << endl;
 
 
 }//end of function DPSCalc
@@ -256,9 +255,6 @@ wep import(wep weapon) {
 	}
 
 	weapons.close();
-
-	cout << weapon.name << endl;
-	cout << weapon.maxDamage << endl;
 
 	return weapon;
 }
