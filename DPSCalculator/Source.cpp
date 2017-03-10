@@ -30,7 +30,8 @@ struct vehicle {
 	string name;
 };
 
-void DPSCalc();
+void InfantryDPSCalc();
+void VehicleDPSCalc();
 wep manualInput(wep);
 wep manualInput();
 wep import(wep);
@@ -45,19 +46,26 @@ int main() {
 	cout << "Welcome to the Planetside 2 DPS Calculator." << endl;
 
 	while (exit == false) {
-		cout << "1. Find DPS" << endl;
-		cout << "2. Create a weapon file" << endl;
-		cout << "3. Exit" << endl;
+		cout << "1. Find DPS against infantry" << endl;
+		cout << "2. Find DPS against vehicles" << endl;
+		cout << "3. Create a weapon file" << endl;
+		cout << "4. Exit" << endl;
 
 		cin >> input;
 
+		cout << endl;
+
 		if (input == 1) {
-			DPSCalc();
+			InfantryDPSCalc();
 		}
 		else if (input == 2) {
+			VehicleDPSCalc();
+		}
+
+		else if (input == 3) {
 			manualInput();
 		}
-		else if (input == 3) {
+		else if (input == 4) {
 			cout << "Exiting..." << endl;
 			exit = true;
 		}
@@ -65,7 +73,7 @@ int main() {
 	}//end of menu while loop
 }
 
-void DPSCalc() {
+void InfantryDPSCalc() {
 
 	wep weapon;
 	int input;
@@ -90,42 +98,63 @@ void DPSCalc() {
 		else { cout << "That input was somehow invalid. Please try again." << endl; }
 	}//end of while loop
 
-	double dps;//damage per second
-	double idealDPS;//dps assuming 100% accuracy and infinite ammo
-	double rps;//rounds per second
-	double damage;//damage after linear interpolation
-	double distance;//distance from target in meters
-	double BTK;//bullets to kill
-	double basicTTK;//time to kill, 100% accuracy on the body
-	double simpleTTK;//time to kill, user-provided accuracy on the body
-	double accuracy;
-	int missedShots;
+	double dps;			//damage per second
+	double idealDPS;	//dps assuming 100% accuracy and infinite ammo
+	double rps;			//rounds per second
+	double damage;		//damage after linear interpolation
+	double distance;	//distance from target in meters
+	double BTK;			//bullets to kill
+	double basicTTK;	//time to kill, 100% accuracy on the body
+	double simpleTTK;	//time to kill, user-provided accuracy on the body
+	double accuracy;	//user-input accuracy percentage
+	double missedShots;	//amount of shots the player will miss
+	double travelTime;	//time it takes for the shot to be fired and hit the target
+	double critRate;	//user-input percentage of how many headshots the player will hit
+	double critDamage;	//extra damage added by crits
+	double totalDamage; //total damage with falloff and crits
 	
 	
-	cout << "What distance are you shooting from?" << endl;
+	cout << "What distance in meters are you shooting from?" << endl;
 
 	cin >> distance;
 
 	cout << "What is your accuracy percentage(do not include the % sign, just the number)?" << endl;
+	cout << "25% is the average overall accuracy for all players." << endl;
 
 	cin >> input;
+
+	cout << "What is your headshot rate percentage(no % sign)?" << endl;
+	cout << "18% is the average headshot rate." << endl;
+
+	cin >> critRate;
+
+	cout << endl;
 
 	accuracy = (double)input / 100.0;
 	accuracy = 1.0 - accuracy;
 
 	damage = weapon.maxDamage - (distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage);
 
+	critRate = critRate / 100;
+	critDamage = ((damage * critRate) * weapon.headShotMult);
+
+	totalDamage = damage + critDamage;
+
 	rps = weapon.RPM / 60.0;
+	travelTime = distance / weapon.velocity;
 
 	idealDPS = rps * damage;
 
-	BTK = 1000 / damage;
+	BTK = 1000 / totalDamage;
 	BTK = ceil(BTK);
 
 	missedShots = BTK * accuracy;
-	simpleTTK = ((BTK + missedShots) - 1) * 60 / weapon.RPM;
+	missedShots = ceil(missedShots);
 
-	basicTTK = (BTK - 1) * 60 / weapon.RPM;
+	simpleTTK = (((BTK + missedShots) - 1) * 60 / weapon.RPM) + travelTime;
+	basicTTK = ((BTK - 1) * 60 / weapon.RPM) + travelTime;
+
+	
 
 	
 
@@ -134,14 +163,22 @@ void DPSCalc() {
 	cout << rps << " rounds per second." << endl;
 	cout << damage << " damage at " << distance << " meters." << endl;
 	cout << idealDPS << " ideal DPS(100% accuracy, infinite ammo)" << endl;
-	cout << BTK << " bullets to kill." << endl;
+	cout << BTK << " hits to kill." << endl;
+	cout << (BTK + missedShots) << " shots to kill, accounting for accuracy." << endl;
 	cout << basicTTK << " seconds to kill, assuming 100% accuracy on the body." << endl;
-	cout << simpleTTK << " seconds to kill, assuming " << input << "% accuracy on the body." << endl;
+	cout << simpleTTK << " seconds to kill, assuming " << input << "% accuracy and a " << (critRate * 100) << "% headshot rate." << endl;
+	cout << travelTime << " second travel time." << endl;
+	cout << endl;
 
 	
 
 
-}//end of function DPSCalc
+}//end of function InfantryDPSCalc
+
+void VehicleDPSCalc() {
+
+	cout << "This feature has not been implemented yet. Sorry!" << endl;
+}
 
 wep manualInput(wep weapon) {
 
@@ -264,7 +301,7 @@ wep manualInput() {
 wep import(wep weapon) {
 
 	ifstream weapons;
-	weapons.open("Weapons.txt");
+	weapons.open("Data/Weapons.txt");
 	bool exit = false;
 	string name;
 	string trash;
@@ -309,7 +346,7 @@ wep import(wep weapon) {
 void save(wep weapon) {
 
 	ofstream weapons;
-	weapons.open("Weapons.txt", ofstream::app);
+	weapons.open("Data/Weapons.txt", ofstream::app);
 
 	weapons << 'S' << endl;
 	weapons << weapon.name << endl;
