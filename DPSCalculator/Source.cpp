@@ -1,4 +1,4 @@
-//h
+//
 //
 
 #include <iostream>
@@ -21,6 +21,23 @@ struct wep {
 	int RPM;
 	string damageType;
 };
+struct vwep {
+
+	string name;
+	int maxDamage;
+	int minDamage;
+	int maxSplashDamage;
+	int minSplashDamage;
+	int minRange;
+	int maxRange;
+	double maxSplashRange;
+	double minSplashRange;
+	int magSize;
+	int velocity;
+	double headShotMult;
+	int RPM;
+	string damageType;
+};
 
 struct vehicle {
 
@@ -32,10 +49,13 @@ struct vehicle {
 
 void InfantryDPSCalc();
 void VehicleDPSCalc();
-wep manualInput(wep);
-wep manualInput();
-wep import(wep);
-void save(wep);
+wep infantryInput(wep);
+wep infantryInput();
+vwep vehicleInput(vwep);
+vwep importVehicle(vwep);
+wep importInfantry(wep);
+void saveInfantry(wep);
+void saveVehicle(vwep);
 string convertLower(string);
 
 int main() {
@@ -63,7 +83,7 @@ int main() {
 		}
 
 		else if (input == 3) {
-			manualInput();
+			infantryInput();
 		}
 		else if (input == 4) {
 			cout << "Exiting..." << endl;
@@ -89,11 +109,11 @@ void InfantryDPSCalc() {
 
 		if (input == 1) {
 			validation = true;
-			weapon = manualInput(weapon);
+			weapon = infantryInput(weapon);
 		}
 		else if (input == 2) {
 			validation = true;
-			weapon = import(weapon);
+			weapon = importInfantry(weapon);
 		}
 		else { cout << "That input was somehow invalid. Please try again." << endl; }
 	}//end of while loop
@@ -102,8 +122,9 @@ void InfantryDPSCalc() {
 	double idealDPS;	//dps assuming 100% accuracy and infinite ammo
 	double rps;			//rounds per second
 	double damage;		//damage after linear interpolation
+	double lostDamage;	//amount of damage lost to missed shots, used to calculate dps
 	double distance;	//distance from target in meters
-	double BTK;			//bullets to kill
+	double BTK;			//bullets to kill, accounting for accuracy
 	double basicTTK;	//time to kill, 100% accuracy on the body
 	double simpleTTK;	//time to kill, user-provided accuracy on the body
 	double accuracy;	//user-input accuracy percentage
@@ -133,8 +154,15 @@ void InfantryDPSCalc() {
 	accuracy = (double)input / 100.0;
 	accuracy = 1.0 - accuracy;
 
-	damage = weapon.maxDamage - (distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage);
-
+	if (distance <= weapon.minRange) {
+		damage = weapon.maxDamage;
+	}
+	else if (distance >= weapon.maxRange) {
+		damage = weapon.minDamage;
+	}
+	else {
+		damage = weapon.maxDamage - (distance - weapon.minRange) / (weapon.maxRange - weapon.minRange) * (weapon.maxDamage - weapon.minDamage);
+	}
 	critRate = critRate / 100;
 	critDamage = ((damage * critRate) * weapon.headShotMult);
 
@@ -144,6 +172,9 @@ void InfantryDPSCalc() {
 	travelTime = distance / weapon.velocity;
 
 	idealDPS = rps * damage;
+	lostDamage = idealDPS * accuracy;
+	dps = (rps * damage) - lostDamage;
+	dps = dps + (dps * critRate);
 
 	BTK = 1000 / totalDamage;
 	BTK = ceil(BTK);
@@ -154,20 +185,25 @@ void InfantryDPSCalc() {
 	simpleTTK = (((BTK + missedShots) - 1) * 60 / weapon.RPM) + travelTime;
 	basicTTK = ((BTK - 1) * 60 / weapon.RPM) + travelTime;
 
-	
-
-	
-
-
 
 	cout << rps << " rounds per second." << endl;
+	cout << travelTime << " second travel time." << endl;
+	cout << endl;
+
+	cout << weapon.maxDamage << " base max damage." << endl;
 	cout << damage << " damage at " << distance << " meters." << endl;
+	cout << endl;
+
 	cout << idealDPS << " ideal DPS(100% accuracy, infinite ammo)" << endl;
+	cout << dps << " DPS with " << input << "% accuracy." << endl;
+	cout << endl;
+
 	cout << BTK << " hits to kill." << endl;
 	cout << (BTK + missedShots) << " shots to kill, accounting for accuracy." << endl;
+	cout << endl;
+
 	cout << basicTTK << " seconds to kill, assuming 100% accuracy on the body." << endl;
 	cout << simpleTTK << " seconds to kill, assuming " << input << "% accuracy and a " << (critRate * 100) << "% headshot rate." << endl;
-	cout << travelTime << " second travel time." << endl;
 	cout << endl;
 
 	
@@ -177,10 +213,31 @@ void InfantryDPSCalc() {
 
 void VehicleDPSCalc() {
 
-	cout << "This feature has not been implemented yet. Sorry!" << endl;
+	vwep weapon;
+	int input;
+	bool validation = false;
+
+	cout << "Would you like to..." << endl;
+	cout << "1. Input data manually" << endl;
+	cout << "2. Import weapon file" << endl;
+
+	while (validation == false) {
+
+		cin >> input;
+
+		if (input == 1) {
+			validation = true;
+			weapon = vehicleInput(weapon);
+		}
+		else if (input == 2) {
+			validation = true;
+			weapon = importVehicle(weapon);
+		}
+		else { cout << "That input was somehow invalid. Please try again." << endl; }
+	}//end of while loop
 }
 
-wep manualInput(wep weapon) {
+wep infantryInput(wep weapon) {
 
 	int input;
 
@@ -236,12 +293,16 @@ wep manualInput(wep weapon) {
 
 		weapon.name = convertLower(weapon.name);
 
-		save(weapon);
+		saveInfantry(weapon);
 	}
 	return weapon;
 }
 
-wep manualInput() {
+vwep vehicleInput(vwep weapon) {
+	return weapon;
+}
+
+wep infantryInput() {
 
 	int input;
 	wep weapon;
@@ -293,12 +354,12 @@ wep manualInput() {
 	weapon.damageType = convertLower(weapon.damageType);
 	weapon.name = convertLower(weapon.name);
 
-	save(weapon);
+	saveInfantry(weapon);
 	
 	return weapon;
 }
 
-wep import(wep weapon) {
+wep importInfantry(wep weapon) {
 
 	ifstream weapons;
 	weapons.open("Data/Weapons.txt");
@@ -343,7 +404,12 @@ wep import(wep weapon) {
 	return weapon;
 }
 
-void save(wep weapon) {
+vwep importVehicle(vwep weapon) {
+
+	return weapon;
+}
+
+void saveInfantry(wep weapon) {
 
 	ofstream weapons;
 	weapons.open("Data/Weapons.txt", ofstream::app);
@@ -354,6 +420,33 @@ void save(wep weapon) {
 	weapons << weapon.minDamage << endl;
 	weapons << weapon.minRange << endl;
 	weapons << weapon.maxRange << endl;
+	weapons << weapon.magSize << endl;
+	weapons << weapon.RPM << endl;
+	weapons << weapon.velocity << endl;
+	weapons << weapon.headShotMult << endl;
+	weapons << weapon.damageType << endl;
+	weapons << "<END>" << endl;
+
+	weapons.close();
+
+	return;
+}
+
+void saveVehicle(vwep weapon) {
+
+	ofstream weapons;
+	weapons.open("Data/VehicleWeapons.txt", ofstream::app);
+
+	weapons << 'S' << endl;
+	weapons << weapon.name << endl;
+	weapons << weapon.maxDamage << endl;
+	weapons << weapon.minDamage << endl;
+	weapons << weapon.maxSplashDamage << endl;
+	weapons << weapon.minSplashDamage << endl;
+	weapons << weapon.minRange << endl;
+	weapons << weapon.maxRange << endl;
+	weapons << weapon.maxSplashRange << endl;
+	weapons << weapon.minSplashRange << endl;
 	weapons << weapon.magSize << endl;
 	weapons << weapon.RPM << endl;
 	weapons << weapon.velocity << endl;

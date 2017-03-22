@@ -39,5 +39,8 @@
     <Text Include="DamageResists.txt">
       <Filter>Save Files</Filter>
     </Text>
+    <Text Include="Data\VehicleWeapons.txt">
+      <Filter>Save Files</Filter>
+    </Text>
   </ItemGroup>
 </Project>
